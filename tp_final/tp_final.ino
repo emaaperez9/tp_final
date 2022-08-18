@@ -1,8 +1,14 @@
+
 #include "HX711.h"
 #include "soc/rtc.h"
+//#include <Servo.h>
 //define sound speed in cm/uS
 #define SOUND_SPEED 0.034
 #define CM_TO_INCH 0.393701
+//#define SERVO_PIN 26 // ESP32 pin GIOP26 connected to servo motor
+
+//Servo servoMotor;
+HX711 scale;
 
 const int estado_tacho_1 = 15;
 int estado = 0;
@@ -18,7 +24,7 @@ float distanceInch;
 const int LOADCELL_DOUT_PIN = 16;
 const int LOADCELL_SCK_PIN = 4;
 
-HX711 scale;
+
 
 void setup() {
   Serial.begin(115200);
@@ -27,6 +33,7 @@ void setup() {
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   pinMode(optico_pin,INPUT);
   Serial.println("HX711 Demo");
+  //servoMotor.attach(SERVO_PIN);  
 
   Serial.println("Inicializando la escala");
 
@@ -111,4 +118,17 @@ if(estado == LOW)
   delay(1500);
   scale.power_up();
 
+  /* // rotates from 0 degrees to 180 degrees
+    for (int pos = 0; pos <= 180; pos += 1) {
+    // in steps of 1 degree
+    servoMotor.write(pos);
+    delay(15); // waits 15ms to reach the position
+  }
+
+  // rotates from 180 degrees to 0 degrees
+  for (int pos = 180; pos >= 0; pos -= 1) {
+    servoMotor.write(pos);
+    delay(15); // waits 15ms to reach the position
+  }
+*/
 }
