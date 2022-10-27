@@ -8,9 +8,9 @@
 //#define SERVO_PIN 26 // ESP32 pin GIOP26 connected to servo motor
 
 //Servo servoMotor;
-HX711 scale;
+//HX711 scale;
 
-const int estado_tacho_1 = 15;
+//const int estado_tacho_1 = 15;
 int estado = 0;
 const int optico_pin = 2;
 uint8_t estado_optico =0;
@@ -19,23 +19,34 @@ const int echoPin = 18;
 long duration;
 float distanceCm;
 float distanceInch;
+// the number of the LED pin
+const int ledPin = 16;  // 16 corresponds to GPIO16
 
+// setting PWM properties
+const int freq = 1000;
+const int ledChannel = 0;
+const int resolution = 8;
 // HX711 circuit wiring
-const int LOADCELL_DOUT_PIN = 16;
-const int LOADCELL_SCK_PIN = 4;
+/*const int LOADCELL_DOUT_PIN = 16;
+const int LOADCELL_SCK_PIN = 4;*/
 
 
 
 void setup() {
   Serial.begin(115200);
   rtc_clk_cpu_freq_set(RTC_CPU_FREQ_80M);
-  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output para medición de distancia
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   pinMode(optico_pin,INPUT);
-  Serial.println("HX711 Demo");
+
+   ledcSetup(ledChannel, freq, resolution); // Configura el pwm en el pin 17
+  
+  // attach the channel to the GPIO to be controlled
+  ledcAttachPin(ledPin, ledChannel);
+  //Serial.println("HX711 Demo");
   //servoMotor.attach(SERVO_PIN);  
 
-  Serial.println("Inicializando la escala");
+  /*Serial.println("Inicializando la escala");
 
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
 
@@ -72,14 +83,14 @@ void setup() {
   Serial.println(scale.get_units(5), 1);        // imprime el promedio de 5 lecturas del ADC menos el peso de tara, dividido
             // by the SCALE parameter set with set_scale
 
-  Serial.println("Readings:");
+  Serial.println("Readings:");*/
 }
 
 void loop() {
-  Serial.print("one reading:\t");
+  /*Serial.print("one reading:\t");
   Serial.print(scale.get_units(), 1);
   Serial.print("\t| average:\t");
-  Serial.println(scale.get_units(10), 5);
+  Serial.println(scale.get_units(10), 5);*/
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   // Sets the trigPin on HIGH state for 10 micro seconds
@@ -87,28 +98,39 @@ void loop() {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   
-  // Reads the echoPin, returns the sound wave travel time in microseconds
+  // Lee el echoPin, devuelve el tiempo de viaje de la onda de sonido en microsegundos
   duration = pulseIn(echoPin, HIGH);
   
-  // Calculate the distance
+  // Calcula la distancia
   distanceCm = duration * SOUND_SPEED/2;
   
   // Convert to inches
-  distanceInch = distanceCm * CM_TO_INCH;
+ // distanceInch = distanceCm * CM_TO_INCH;
   
   // Prints the distance in the Serial Monitor
   Serial.print("Distance (cm): ");
   Serial.println(distanceCm);
-  Serial.print("Distance (inch): ");
-  Serial.println(distanceInch);
+  /*Serial.print("Distance (inch): ");
+  Serial.println(distanceInch);*/
   
-  estado = digitalRead(estado_tacho_1); 
+ // estado = digitalRead(estado_tacho_1); 
   estado_optico = digitalRead(optico_pin);
 if(estado_optico == LOW)
-  Serial.println("Lejos"); 
+  Serial.println("Detecta"); 
   else
-  Serial.println("Cerca");// muestro estado 
+  Serial.println("No detecta");// muestro estado del sensor óptico
+  
+  
+ // changing the LED brightness with PWM
+    ledcWrite(ledChannel, 127);
+    delay(15);
+  
 
+
+
+
+
+/*
 if(estado == LOW)
   Serial.println("Ocupado"); 
   else
@@ -116,7 +138,7 @@ if(estado == LOW)
 
   scale.power_down();             // put the ADC in sleep mode
   delay(1500);
-  scale.power_up();
+  scale.power_up();*/
 
   /* // rotates from 0 degrees to 180 degrees
     for (int pos = 0; pos <= 180; pos += 1) {
