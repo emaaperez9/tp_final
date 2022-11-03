@@ -12,7 +12,7 @@
 
 //const int estado_tacho_1 = 15;
 int estado = 0;
-const int optico_pin = 2;
+const int optico_pin = 4;
 uint8_t estado_optico =0;
 const int trigPin = 5;
 const int echoPin = 18;
