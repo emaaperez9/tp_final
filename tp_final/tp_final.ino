@@ -97,22 +97,27 @@ Serial.println("NO Hay nada");
   if (lectura_Optico == 1 && lectura_Capacitivo == 0 && lectura_Inductivo == 0)
   {
     Serial.println("Plástico"); 
+    //bandera plastico, crear variable
   }
   else if (lectura_Optico == 0 && lectura_Capacitivo == 0 && lectura_Inductivo == 0)
           {
             Serial.println("PAPEL");
+            // bandera papel y carton
           }
           else if(lectura_Optico == 0 && lectura_Capacitivo == 1 && lectura_Inductivo == 0)
                   {
                     Serial.println("Carton");
+                    //bandera papel y carton
                   }
                 else if(lectura_Optico == 1 && lectura_Capacitivo == 1 && lectura_Inductivo == 0)
                         {
                           Serial.println("vidrio");
+                          //bandera vidrio
                         }
                         else if(lectura_Optico == 1 && lectura_Capacitivo == 1 && lectura_Inductivo == 1)
                                 {
                                   Serial.println("Metal");
+                                  //bandera metal
                                 }
                                 else {
                                   Serial.println("Este material no se recicla");
