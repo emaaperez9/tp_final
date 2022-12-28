@@ -11,10 +11,8 @@
 #define TRIG_PIN 5
 #define ECHO_PIN 18
 //#define SERVO_PIN 26 // ESP32 pin GIOP26 connected to servo motor
-
 //Servo servoMotor;
 //HX711 scale;
-
 //const int estado_tacho_1 = 15;
 int estado = 0;
 uint8_t lectura_Optico = 1;
