@@ -1,8 +1,15 @@
-
+/*************************************************************************************
+Librerías
+**************************************************************************************/
 #include "HX711.h"
 #include "soc/rtc.h"
+#include <WiFi.h>
 //#include <Servo.h>
 //define sound speed in cm/uS
+
+/*******************************************************************************************************************
+Variables definidas
+********************************************************************************************************************/
 #define SOUND_SPEED 0.034
 #define CM_TO_INCH 0.393701
 #define DISTANCIA_MINIMA 2.00
@@ -10,41 +17,58 @@
 #define OPTICO_PIN 4
 #define TRIG_PIN 5
 #define ECHO_PIN 18
-//#define SERVO_PIN 26 // ESP32 pin GIOP26 connected to servo motor
-//Servo servoMotor;
-//HX711 scale;
-//const int estado_tacho_1 = 15;
-int estado = 0;
+#define CAPACITIVO_PIN 19
+#define INDUCTIVO_PIN 0
+#define SERVO_PIN 17 // ESP32 pin GIOP26 connected to servo motor
+#define TACHO_1_PIN 36
+#define TACHO_2_PIN 39
+#define TACHO_3_PIN 34
+
+
+/**********************************************************************************************
+Variables globales
+***********************************************************************************************/
 uint8_t lectura_Optico = 1;
 uint8_t lectura_Capacitivo = 0 ;
 uint8_t lectura_Inductivo = 0;
-//const int trigPin = 5;
-//const int echoPin = 18;
 long duracion;
 float distancia_Cm;
-float prueba_distancia;
-int estado_optico;
-//float distanceInch;
-// the number of the LED pin
-const int ledPin = 16;  // 16 corresponds to GPIO16
-
+float lectura_Distancia;
+int habilitar_Servo=0;
+int habilitar_tacho_1=0; //PLASTICO - METAL
+int habilitar_tacho_2=0; //CARTON - PAPEL
+int habilitar_tacho_3=0; //VIDRIO
+int posicion_tacho_1;
+int posicion_tacho_2;
+int posicion_tacho_3;
 // setting PWM properties
 const int freq = 1000;
 const int ledChannel = 0;
 const int resolution = 8;
-// HX711 circuit wiring
-/*const int LOADCELL_DOUT_PIN = 16;
-const int LOADCELL_SCK_PIN = 4;*/
+const char* ssid = "NoPreguntes";
+const char* password = "kaon8401128A6D6E";
 
+
+/************************************************************
+Funciones
+*************************************************************/
 float distancia();
-
-
+void initWiFi();
+/************************************************************
+Configuración ESP32
+*************************************************************/
 void setup() {
   Serial.begin(115200);
   rtc_clk_cpu_freq_set(RTC_CPU_FREQ_80M);
+  initWiFi();
   pinMode(TRIG_PIN, OUTPUT); // Sets the trigPin as an Output para medición de distancia
   pinMode(ECHO_PIN, INPUT); // Sets the echoPin as an Input
-  pinMode(OPTICO_PIN,INPUT);
+  pinMode(CAPACITIVO_PIN,INPUT);
+  pinMode(INDUCTIVO_PIN,INPUT);
+  pinMode(TACHO_1_PIN,INPUT);
+  pinMode(TACHO_2_PIN,INPUT);
+  pinMode(TACHO_3_PIN,INPUT);
+  pinMode(SERVO_PIN,OUTPUT);
 
   //ledcSetup(ledChannel, freq, resolution); // Configura el pwm en el pin 17
   
@@ -54,77 +78,91 @@ void setup() {
 
 
 void loop() {
-  prueba_distancia = distancia();
-  Serial.println(prueba_distancia);
- /* digitalWrite(TRIG_PIN, LOW);
-  delayMicroseconds(2);
-  // Sets the trigPin on HIGH state for 10 micro seconds
-  digitalWrite(TRIG_PIN, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG_PIN, LOW);
+  lectura_Distancia = distancia();
+  delay(100);
+  //Serial.println(distancia());
+  lectura_Capacitivo = digitalRead(CAPACITIVO_PIN);
+  delay(20);
+  lectura_Inductivo = digitalRead(INDUCTIVO_PIN);
+  delay(20);
+  lectura_Optico = digitalRead(OPTICO_PIN);
+  delay(20);
   
-  // Lee el echoPin, devuelve el tiempo de viaje de la onda de sonido en microsegundos
-  duracion = pulseIn(ECHO_PIN, HIGH);*/
-  
- 
- 
-  
-  // Convert to inches
- // distanceInch = distanceCm * CM_TO_INCH;
-  
-  // Prints the distance in the Serial Monitor
-  
-  /*Serial.print("Distance (inch): ");
-  Serial.println(distanceInch);*/
-  
- // estado = digitalRead(estado_tacho_1); 
- /* estado_optico = digitalRead(OPTICO_PIN);
-if(estado_optico == LOW)
-  Serial.println("Detecta"); 
-  else
-  Serial.println("No detecta");// muestro estado del sensor óptico
-  */
-  
- // changing the LED brightness with PWM
- //   ledcWrite(ledChannel, 127);
- //   delay(15);
- 
-Serial.println("NO Hay nada");
- while(prueba_distancia >= DISTANCIA_MINIMA && prueba_distancia < DISTANCIA_MAXIMA)
+ while(lectura_Distancia >= DISTANCIA_MINIMA && lectura_Distancia < DISTANCIA_MAXIMA)
  {
+  habilitar_Servo = 1;
   if (lectura_Optico == 1 && lectura_Capacitivo == 0 && lectura_Inductivo == 0)
   {
-    Serial.println("Plástico"); 
-    //bandera plastico, crear variable
+    Serial.println("PLASTICO"); 
+    habilitar_tacho_1 = 1;
+    break;
   }
   else if (lectura_Optico == 0 && lectura_Capacitivo == 0 && lectura_Inductivo == 0)
           {
             Serial.println("PAPEL");
-            // bandera papel y carton
+            habilitar_tacho_2 = 1;
+            break;
           }
           else if(lectura_Optico == 0 && lectura_Capacitivo == 1 && lectura_Inductivo == 0)
+                   {
+                     Serial.println("CARTON");
+                     habilitar_tacho_2 = 1;
+                     break;
+                    }
+                    else if(lectura_Optico == 1 && lectura_Capacitivo == 1 && lectura_Inductivo == 0)
+                          {
+                            Serial.println("VIDRIO");
+                            habilitar_tacho_3 = 1;
+                            break;
+                            }
+                            else if(lectura_Optico == 1 && lectura_Capacitivo == 1 && lectura_Inductivo == 1)
+                                  {
+                                    Serial.println("METAL");
+                                    habilitar_tacho_1 = 1;
+                                    break;
+                                  }
+                                  else {
+                                          Serial.println("Este material no se recicla");
+                                          habilitar_Servo = 0;
+                                          break;
+                                        }
+ 
+}
+/********************************************************************************************************************
+Luego de determinar el tipo de residuo, debemos mover el tacho n a la posición indicada.
+ Cada tacho tendra un final de carrera que indicará si este se encuentra en posición indicada para poder activar 
+ el servo y mover el residuo al contenedor correspondiente. Para esto corroboramos que cada tacho corresponda con su 
+ final de carrera.
+Antes de 
+**********************************************************************************************************************/
+while(habilitar_Servo == 1)
+{
+  if (habilitar_tacho_1 == 1 && posicion_tacho_1 == 1 && habilitar_Servo == 1)
+  {
+    //mover servo 
+    habilitar_Servo = 0;
+    break;
+  }
+  else if(habilitar_tacho_2 == 1 && posicion_tacho_2 == 2 && habilitar_Servo == 1)
+         {
+          //mover servo
+          habilitar_Servo = 0;
+          break;
+         }
+          else if(habilitar_tacho_3 == 1 && posicion_tacho_3 == 1 && habilitar_Servo == 1)
                   {
-                    Serial.println("Carton");
-                    //bandera papel y carton
+                    //mover servo
+                    habilitar_Servo = 0;
+                    break;
                   }
-                else if(lectura_Optico == 1 && lectura_Capacitivo == 1 && lectura_Inductivo == 0)
-                        {
-                          Serial.println("vidrio");
-                          //bandera vidrio
-                        }
-                        else if(lectura_Optico == 1 && lectura_Capacitivo == 1 && lectura_Inductivo == 1)
-                                {
-                                  Serial.println("Metal");
-                                  //bandera metal
-                                }
-                                else {
-                                  Serial.println("Este material no se recicla");
-                                }
-                                prueba_distancia =distancia();
- }
+  }
+
 }
 
 
+/*****************************************************************
+Funciones
+******************************************************************/
 float distancia(){
     digitalWrite(TRIG_PIN, LOW);
   delayMicroseconds(2);
@@ -141,3 +179,16 @@ float distancia(){
 
   return(distancia_Cm);
 }
+
+void initWiFi() {
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi ..");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print('.');
+    delay(1000);
+  }
+  Serial.println(WiFi.localIP());
+}
+
+
