@@ -79,7 +79,9 @@ void setup() {
 
 void loop() {
   lectura_Distancia = distancia();
+  Serial.println(lectura_Distancia);
   delay(100);
+
   //Serial.println(distancia());
   lectura_Capacitivo = digitalRead(CAPACITIVO_PIN);
   delay(20);
@@ -134,7 +136,8 @@ Luego de determinar el tipo de residuo, debemos mover el tacho n a la posición 
  el servo y mover el residuo al contenedor correspondiente. Para esto corroboramos que cada tacho corresponda con su 
  final de carrera.
 Antes de 
-**********************************************************************************************************************/
+*********************************************************************************************************************/
+
 while(habilitar_Servo == 1)
 {
   if (habilitar_tacho_1 == 1 && posicion_tacho_1 == 1 && habilitar_Servo == 1)
