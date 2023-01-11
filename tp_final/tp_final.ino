@@ -17,12 +17,12 @@ Variables definidas
 #define OPTICO_PIN 4
 #define TRIG_PIN 5
 #define ECHO_PIN 18
-#define CAPACITIVO_PIN 19
-#define INDUCTIVO_PIN 0
+#define CAPACITIVO_PIN 36
+#define INDUCTIVO_PIN 39
 #define SERVO_PIN 17 // ESP32 pin GIOP26 connected to servo motor
-#define TACHO_1_PIN 36
-#define TACHO_2_PIN 39
-#define TACHO_3_PIN 34
+#define TACHO_1_PIN 6
+#define TACHO_2_PIN 7
+#define TACHO_3_PIN 8
 
 
 /**********************************************************************************************
@@ -193,5 +193,3 @@ void initWiFi() {
   }
   Serial.println(WiFi.localIP());
 }
-
-

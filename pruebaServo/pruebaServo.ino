@@ -44,7 +44,7 @@ Servo myservo;  // create servo object to control a servo
 int pos = 0;    // variable to store the servo position
 // Recommended PWM GPIO pins on the ESP32 include 2,4,12-19,21-23,25-27,32-33 
 // Possible PWM GPIO pins on the ESP32-S2: 0(used by on-board button),1-17,18(used by on-board LED),19-21,26,33-42
-int servoPin = 16;
+int servoPin = 17;
 
 const int boton_abrir = 4; //botón abrir servo
 const int boton_cerrar = 5; //botón cerrar servo
