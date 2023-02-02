@@ -20,17 +20,16 @@ Variables definidas
 #define CAPACITIVO_PIN 36
 #define INDUCTIVO_PIN 39
 #define SERVO_PIN 17 // ESP32 pin GIOP26 connected to servo motor
-#define TACHO_1_PIN 6
+#define TACHO_1_PIN 15
 #define TACHO_2_PIN 7
 #define TACHO_3_PIN 8
-
 
 /**********************************************************************************************
 Variables globales
 ***********************************************************************************************/
-uint8_t lectura_Optico = 1;
-uint8_t lectura_Capacitivo = 0 ;
-uint8_t lectura_Inductivo = 0;
+uint8_t lectura_Optico;
+uint8_t lectura_Capacitivo;
+uint8_t lectura_Inductivo;
 long duracion;
 float distancia_Cm;
 float lectura_Distancia;
@@ -63,7 +62,7 @@ void setup() {
   initWiFi();
   pinMode(TRIG_PIN, OUTPUT); // Sets the trigPin as an Output para medición de distancia
   pinMode(ECHO_PIN, INPUT); // Sets the echoPin as an Input
-  pinMode(CAPACITIVO_PIN,INPUT);
+  pinMode(CAPACITIVO_PIN,INPUT_PULLUP);
   pinMode(INDUCTIVO_PIN,INPUT);
   pinMode(TACHO_1_PIN,INPUT);
   pinMode(TACHO_2_PIN,INPUT);
@@ -84,15 +83,24 @@ void loop() {
 
   //Serial.println(distancia());
   lectura_Capacitivo = digitalRead(CAPACITIVO_PIN);
-  delay(20);
+  Serial.print("Capacitivo: ");
+  Serial.println(lectura_Capacitivo);
+  delay(100);
+ 
   lectura_Inductivo = digitalRead(INDUCTIVO_PIN);
-  delay(20);
+  Serial.print("Inductivo: ");
+  Serial.println(lectura_Inductivo);
+  delay(100);
+ 
+
   lectura_Optico = digitalRead(OPTICO_PIN);
-  delay(20);
+  Serial.print("OPTICO_PIN: ");
+  Serial.println(lectura_Optico);
+  delay(100);
   
- while(lectura_Distancia >= DISTANCIA_MINIMA && lectura_Distancia < DISTANCIA_MAXIMA)
+/* while(lectura_Distancia >= DISTANCIA_MINIMA && lectura_Distancia < DISTANCIA_MAXIMA)
  {
-  habilitar_Servo = 1;
+  //habilitar_Servo = 1;
   if (lectura_Optico == 1 && lectura_Capacitivo == 0 && lectura_Inductivo == 0)
   {
     Serial.println("PLASTICO"); 
@@ -125,11 +133,11 @@ void loop() {
                                   }
                                   else {
                                           Serial.println("Este material no se recicla");
-                                          habilitar_Servo = 0;
+                                          //habilitar_Servo = 0;
                                           break;
                                         }
  
-}
+}*/
 /********************************************************************************************************************
 Luego de determinar el tipo de residuo, debemos mover el tacho n a la posición indicada.
  Cada tacho tendra un final de carrera que indicará si este se encuentra en posición indicada para poder activar 
@@ -137,7 +145,7 @@ Luego de determinar el tipo de residuo, debemos mover el tacho n a la posición 
  final de carrera.
 Antes de 
 *********************************************************************************************************************/
-
+/*
 while(habilitar_Servo == 1)
 {
   if (habilitar_tacho_1 == 1 && posicion_tacho_1 == 1 && habilitar_Servo == 1)
@@ -160,8 +168,8 @@ while(habilitar_Servo == 1)
                   }
   }
 
+}*/
 }
-
 
 /*****************************************************************
 Funciones
@@ -186,7 +194,7 @@ float distancia(){
 void initWiFi() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-  Serial.print("Connecting to WiFi ..");
+  Serial.println("Connecting to WiFi ..");
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print('.');
     delay(1000);
