@@ -14,13 +14,13 @@ Variables definidas
 #define CM_TO_INCH 0.393701
 #define DISTANCIA_MINIMA 2.00
 #define DISTANCIA_MAXIMA 10.00
-#define OPTICO_PIN 4
-#define TRIG_PIN 5
-#define ECHO_PIN 18
-#define CAPACITIVO_PIN 36
-#define INDUCTIVO_PIN 39
-#define SERVO_PIN 17 // ESP32 pin GIOP26 connected to servo motor
-#define TACHO_1_PIN 15
+#define OPTICO_PIN 15
+#define TRIG_PIN 18
+#define ECHO_PIN 5
+#define CAPACITIVO_PIN 13
+#define INDUCTIVO_PIN 4
+#define SERVO_PIN 17 // ESP32 pin 17 connected to servo motor
+#define TACHO_1_PIN 36
 #define TACHO_2_PIN 7
 #define TACHO_3_PIN 8
 
@@ -91,7 +91,6 @@ void loop() {
   Serial.print("Inductivo: ");
   Serial.println(lectura_Inductivo);
   delay(100);
- 
 
   lectura_Optico = digitalRead(OPTICO_PIN);
   Serial.print("OPTICO_PIN: ");
