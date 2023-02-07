@@ -2,7 +2,7 @@
 Librerías
 **************************************************************************************/
 #include "HX711.h"
-#include "soc/rtc.h"
+//#include "soc/rtc.h"
 #include <WiFi.h>
 //#include <Servo.h>
 //define sound speed in cm/uS
@@ -20,9 +20,9 @@ Variables definidas
 #define CAPACITIVO_PIN 13
 #define INDUCTIVO_PIN 4
 #define SERVO_PIN 17 // ESP32 pin 17 connected to servo motor
-#define TACHO_1_PIN 36
-#define TACHO_2_PIN 7
-#define TACHO_3_PIN 8
+#define TACHO_1_PIN 25
+#define TACHO_2_PIN 26
+#define TACHO_3_PIN 27
 
 /**********************************************************************************************
 Variables globales
@@ -58,16 +58,17 @@ Configuración ESP32
 *************************************************************/
 void setup() {
   Serial.begin(115200);
-  rtc_clk_cpu_freq_set(RTC_CPU_FREQ_80M);
+ // rtc_clk_cpu_freq_set(RTC_CPU_FREQ_80M);
   initWiFi();
   pinMode(TRIG_PIN, OUTPUT); // Sets the trigPin as an Output para medición de distancia
   pinMode(ECHO_PIN, INPUT); // Sets the echoPin as an Input
-  pinMode(CAPACITIVO_PIN,INPUT_PULLUP);
+  pinMode(CAPACITIVO_PIN,INPUT);
   pinMode(INDUCTIVO_PIN,INPUT);
   pinMode(TACHO_1_PIN,INPUT);
   pinMode(TACHO_2_PIN,INPUT);
   pinMode(TACHO_3_PIN,INPUT);
   pinMode(SERVO_PIN,OUTPUT);
+  pinMode(OPTICO_PIN,INPUT);
 
   //ledcSetup(ledChannel, freq, resolution); // Configura el pwm en el pin 17
   
@@ -77,10 +78,9 @@ void setup() {
 
 
 void loop() {
-  lectura_Distancia = distancia();
+  /*lectura_Distancia = distancia();
   Serial.println(lectura_Distancia);
-  delay(100);
-
+  delay(100);*/
   //Serial.println(distancia());
   lectura_Capacitivo = digitalRead(CAPACITIVO_PIN);
   Serial.print("Capacitivo: ");
@@ -95,6 +95,21 @@ void loop() {
   lectura_Optico = digitalRead(OPTICO_PIN);
   Serial.print("OPTICO_PIN: ");
   Serial.println(lectura_Optico);
+  delay(100);
+/*
+    lectura_Optico = digitalRead(TACHO_1_PIN);
+  Serial.print("TACHO_PIN_1: ");
+  Serial.println(posicion_tacho_1);
+  delay(100);
+
+    lectura_Optico = digitalRead(TACHO_2_PIN);
+  Serial.print("TACHO_PIN_2: ");
+  Serial.println(posicion_tacho_2);
+  delay(100);
+*/
+    lectura_Optico = digitalRead(TACHO_3_PIN);
+  Serial.print("TACHO_PIN_3: ");
+  Serial.println(posicion_tacho_3);
   delay(100);
   
 /* while(lectura_Distancia >= DISTANCIA_MINIMA && lectura_Distancia < DISTANCIA_MAXIMA)
