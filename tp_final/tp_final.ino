@@ -4,6 +4,7 @@ Librerías
 #include "HX711.h"
 #include "soc/rtc.h"
 #include <WiFi.h>
+#include <ESP32Servo.h>
 //#include <Servo.h>
 //define sound speed in cm/uS
 
@@ -46,8 +47,8 @@ const int ledChannel = 0;
 const int resolution = 8;
 const char* ssid = "NoPreguntes";
 const char* password = "kaon8401128A6D6E";
-
-
+Servo servo;
+int pos = 0;
 /************************************************************
 Funciones
 *************************************************************/
@@ -71,7 +72,7 @@ void setup() {
   pinMode(TACHO_3_PIN,INPUT);
   pinMode(SERVO_PIN,OUTPUT);
   pinMode(OPTICO_PIN,INPUT);
-
+  servo.attach(SERVO_PIN, 300, 3000);
   //ledcSetup(ledChannel, freq, resolution); // Configura el pwm en el pin 17
   
   // attach the channel to the GPIO to be controlled
@@ -157,7 +158,12 @@ void loop() {
                                           habilitar_Servo = 0;
                                           break;
                                         }
- 
+//prueba de servo
+abrirCesto();
+delay(500);
+cerrarCesto();
+delay(500);
+
 }
 /********************************************************************************************************************
 Luego de determinar el tipo de residuo, debemos mover el tacho n a la posición indicada.
@@ -166,7 +172,7 @@ Luego de determinar el tipo de residuo, debemos mover el tacho n a la posición 
  final de carrera.
 Antes de 
 *********************************************************************************************************************/
-while(habilitar_Servo == 1)
+/*while(habilitar_Servo == 1)
 {
   if (habilitar_tacho_1 == 1 && posicion_tacho_1 == 1 && habilitar_Servo == 1)
   {
@@ -188,7 +194,7 @@ while(habilitar_Servo == 1)
                   }
   }
 
-}
+}*/
 }
 
 /*****************************************************************
