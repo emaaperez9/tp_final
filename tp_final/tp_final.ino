@@ -53,6 +53,8 @@ Funciones
 *************************************************************/
 float distancia();
 void initWiFi();
+void abrirCesto();
+void cerrarCesto();
 /************************************************************
 Configuración ESP32
 *************************************************************/
@@ -218,4 +220,21 @@ void initWiFi() {
     delay(1000);
   }
   Serial.println(WiFi.localIP());
+}
+void abrirCesto(){
+    for (pos = 30; pos <= 150; pos += 1) {
+    //Movemos el servo a los grados que le entreguemos
+    servo.write(pos);
+    //Esperamos 18 milisegundos
+    delay(18);
+  }
+  
+}
+void cerrarCesto(){
+  for (pos = 150; pos >= 30; pos -= 1) {
+    //Movemos el servo a los grados que le entreguemos
+    servo.write(pos);
+    //Esperamos 15 milisegundos
+    delay(18);
+  }
 }
