@@ -43,6 +43,7 @@ uint8_t posicion_tacho_2;
 uint8_t posicion_tacho_3;
 // setting PWM properties
 const int freq = 1000;
+
 const int ledChannel = 0;
 const int resolution = 8;
 const char* ssid = "NoPreguntes";
